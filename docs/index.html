@@ -109,7 +109,7 @@ const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2,
 CHAPTERS.forEach(([t, label]) => {
   const li = document.createElement("li");
   li.innerHTML = `<button type="button"><span class="t">${fmt(t)}</span><span>${label}</span></button>`;
-  li.firstChild.addEventListener("click", () => { v.currentTime = t; v.play(); });
+  li.firstChild.addEventListener("click", () => { v.currentTime = t; v.play(); track.chapter(label); });
   ol.appendChild(li);
 });
 const btns = [...ol.querySelectorAll("button")];
@@ -118,6 +118,48 @@ v.addEventListener("timeupdate", () => {
   CHAPTERS.forEach(([t], j) => { if (v.currentTime >= t - 0.25) i = j; });
   btns.forEach((b, j) => b.classList.toggle("on", j === i));
 });
+
+// ---- view alerts to my phone via ntfy.sh: page opened, playback started, 25/50/75% and finished.
+// Only these events are sent. Open the page once with ?me to mute your own visits on that browser.
+const track = (() => {
+  const TOPIC = "rishi-bolna-002a7d972df3";
+  const q = new URLSearchParams(location.search);
+  let muted = false;
+  try {
+    if (q.has("me")) localStorage.setItem("calllab_me", "1");
+    muted = localStorage.getItem("calllab_me") === "1";
+  } catch (e) {}
+  const sid = Math.random().toString(36).slice(2, 6);
+  const tag = (q.get("c") || "link") + ", " + (/Mobi|Android/i.test(navigator.userAgent) ? "phone" : "desktop");
+  const url = (title, tags) => `https://ntfy.sh/${TOPIC}?title=${encodeURIComponent(title)}&tags=${tags}`;
+  const send = (title, msg, tags, beacon = false) => {
+    if (muted) return;
+    const body = `${msg}\n${tag}, visit ${sid}`;
+    try {
+      if (beacon && navigator.sendBeacon) navigator.sendBeacon(url(title, tags), body);
+      else fetch(url(title, tags), { method: "POST", body, keepalive: true }).catch(() => {});
+    } catch (e) {}
+  };
+  let watched = 0, last = null, started = false;
+  const hit = new Set();
+  send("Video page opened", "Someone opened the Bolna video page", "eyes");
+  v.addEventListener("play", () => { if (!started) { started = true; send("Video started", "Playback started", "arrow_forward"); } });
+  v.addEventListener("timeupdate", () => {
+    const t = v.currentTime;
+    if (last !== null && !v.paused && t > last && t - last < 1.5) watched += t - last;
+    last = t;
+    const pct = v.duration ? (watched / v.duration) * 100 : 0;
+    for (const m of [25, 50, 75, 95]) {
+      if (pct >= m && !hit.has(m)) {
+        hit.add(m);
+        send(m === 95 ? "Watched to the end" : `Watched ${m}%`, `${fmt(watched)} watched so far`, m === 95 ? "tada" : "hourglass");
+      }
+    }
+  });
+  v.addEventListener("seeking", () => { last = null; });
+  addEventListener("pagehide", () => { if (started) send("Left the page", `Watched ${fmt(watched)} in total`, "wave", true); });
+  return { chapter: label => send("Jumped to a chapter", label, "bookmark") };
+})();
 </script>
 </body>
 </html>
