@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bolna 12-second drop</title>
+<meta name="description" content="A 5-minute walkthrough: why Bolna calls drop at ~12 seconds, reproduced on the real Bolna engine.">
+<meta property="og:title" content="Why Bolna calls drop at 12 seconds">
+<meta property="og:description" content="5-minute walkthrough, reproduced on the real Bolna engine.">
+<meta property="og:image" content="poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314213D'/%3E%3Cpath d='M5 17h4l3-8 4 15 3-10 2 3h6' stroke='%2337C6B5' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --paper:#E9EDF1; --card:#FFFFFF; --ink:#14213D; --muted:#5B6782; --line:#D3DAE3;
+  --caller:#2F6BFF; --agent:#0E9F8E; --cut:#E0343A;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#0F1830; --card:#16223F; --ink:#E6ECF5; --muted:#9AA7C0; --line:#26345A; }
+}
+:root[data-theme="dark"]{ --paper:#0F1830; --card:#16223F; --ink:#E6ECF5; --muted:#9AA7C0; --line:#26345A; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 24px 64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+.brand svg{width:28px;height:28px}
+.brand svg rect{fill:#14213D}.brand svg path{stroke:#37C6B5;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.brand span{color:var(--muted);font-weight:400}
+h1{font-size:clamp(28px,4.2vw,44px);line-height:1.12;letter-spacing:-.02em;margin:28px 0 10px;font-weight:700;max-width:22ch}
+.lede{color:var(--muted);font-size:18px;margin:0 0 28px;max-width:62ch}
+.lede b{color:var(--ink);font-weight:600}
+.player{background:#000;border-radius:14px;overflow:hidden;box-shadow:0 1px 0 var(--line),0 18px 50px -24px rgba(20,33,61,.45)}
+video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.below{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;margin-top:36px}
+h2{font-size:15px;font-weight:600;margin:0 0 12px}
+ol.ch{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+ol.ch li{border-bottom:1px solid var(--line)}
+ol.ch button{all:unset;cursor:pointer;display:grid;grid-template-columns:52px 1fr;gap:8px;width:100%;padding:9px 6px;border-radius:6px}
+ol.ch button:hover{background:var(--card)}
+ol.ch button:focus-visible{outline:2px solid var(--caller);outline-offset:2px}
+ol.ch button.on{background:var(--card)}
+ol.ch button.on .t{color:var(--agent)}
+.t{font:500 13px/1.6 "IBM Plex Mono",monospace;color:var(--muted)}
+.found p{margin:0 0 14px;max-width:46ch}
+.found .k{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.links a{color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--card);padding:9px 14px;border-radius:8px;font-weight:500;font-size:15px}
+.links a:hover{border-color:var(--agent)}
+.links a.primary{background:#14213D;color:#fff;border-color:#14213D}
+footer{margin-top:56px;color:var(--muted);font-size:14px}
+@media (max-width:760px){.wrap{padding:24px 16px 48px}.below{grid-template-columns:1fr;gap:28px}.lede{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7"/><path d="M5 17h4l3-8 4 15 3-10 2 3h6"/></svg>
+    Call Lab <span>for Bolna voice agents</span>
+  </div>
+
+  <h1>Why your Bolna calls drop at 12 seconds</h1>
+  <p class="lede">I reproduced it on the real open-source Bolna engine, found four different causes that all look the same from the outside, and fixed it. <b>5 minutes.</b></p>
+
+  <div class="player">
+    <video id="v" controls preload="metadata" playsinline poster="poster.jpg">
+      <source src="demo.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="below">
+    <section>
+      <h2>Chapters</h2>
+      <ol class="ch" id="ch"></ol>
+    </section>
+    <section class="found">
+      <h2>The short version</h2>
+      <p><span class="k" style="background:var(--cut)"></span>Bolna hangs up after 10 s of silence, checked every 2 s. That is your 12 seconds.</p>
+      <p><span class="k" style="background:var(--caller)"></span>A healthy call trips it when the caller pauses. Broken voice, rejected speech-to-text and one-way audio trip it too.</p>
+      <p><span class="k" style="background:var(--agent)"></span>The fix depends on which one it is, and Bolna's own logs tell you. Send me one execution ID and I'll tell you which.</p>
+      <div class="links">
+        <a class="primary" href="plan/">Read the full plan</a>
+        <a href="https://github.com/rishi-sangare/bolna-call-lab">Code on GitHub</a>
+      </div>
+    </section>
+  </div>
+
+  <footer>Rishi Sangare · Voice AI engineer</footer>
+</div>
+
+<script>
+const CHAPTERS = [
+  [0, "Calls drop after about 12 seconds"],
+  [17, "Bolna's silence watchdog: 10 s plus a 2 s check"],
+  [48, "Real Bolna engine and a Twilio-protocol caller"],
+  [76, "Live call: a healthy call that still gets cut"],
+  [114, "Diagnosis from Bolna's own logs"],
+  [135, "Same drop, different cause: the voice never plays"],
+  [153, "Speech-to-text account rejected (HTTP 402)"],
+  [174, "Caller audio never reaches Bolna"],
+  [190, "Live call: the fixed configuration"],
+  [268, "Where the response time goes"],
+  [284, "What I'd do on your agent"],
+];
+const v = document.getElementById("v");
+const ol = document.getElementById("ch");
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+CHAPTERS.forEach(([t, label]) => {
+  const li = document.createElement("li");
+  li.innerHTML = `<button type="button"><span class="t">${fmt(t)}</span><span>${label}</span></button>`;
+  li.firstChild.addEventListener("click", () => { v.currentTime = t; v.play(); });
+  ol.appendChild(li);
+});
+const btns = [...ol.querySelectorAll("button")];
+v.addEventListener("timeupdate", () => {
+  let i = 0;
+  CHAPTERS.forEach(([t], j) => { if (v.currentTime >= t - 0.25) i = j; });
+  btns.forEach((b, j) => b.classList.toggle("on", j === i));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bolna Call Lab Plan</title>
+<style>
+:root{
+  --bg:#0d1117; --bg2:#11161f; --panel:#161c27; --panel2:#1c2432; --border:#2a3446;
+  --text:#e6ebf2; --muted:#9aa6b8; --faint:#6b778a;
+  --accent:#5fd068; --accent-dim:#1f3d25; --info:#58a6ff; --info-dim:#14304f;
+  --warn:#f2b84b; --warn-dim:#3d2f12; --danger:#ff5f56; --danger-dim:#3d1716;
+  --purple:#b48cff; --purple-dim:#2a1f45;
+  --code-bg:#0a0e15; --mono:ui-monospace,"Cascadia Code","JetBrains Mono",Consolas,monospace;
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f6f8fb; --bg2:#eef2f7; --panel:#ffffff; --panel2:#f3f6fa; --border:#d6dde8;
+    --text:#152030; --muted:#566377; --faint:#8592a6;
+    --accent:#1f9d35; --accent-dim:#dff3e2; --info:#1f6fd1; --info-dim:#e1ecfb;
+    --warn:#a86b00; --warn-dim:#fbf0d9; --danger:#c9302c; --danger-dim:#fbe3e2;
+    --purple:#6b3fd1; --purple-dim:#ece5fb; --code-bg:#f2f5f9;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f6f8fb; --bg2:#eef2f7; --panel:#ffffff; --panel2:#f3f6fa; --border:#d6dde8;
+  --text:#152030; --muted:#566377; --faint:#8592a6;
+  --accent:#1f9d35; --accent-dim:#dff3e2; --info:#1f6fd1; --info-dim:#e1ecfb;
+  --warn:#a86b00; --warn-dim:#fbf0d9; --danger:#c9302c; --danger-dim:#fbe3e2;
+  --purple:#6b3fd1; --purple-dim:#ece5fb; --code-bg:#f2f5f9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--bg);color:var(--text);font:15.5px/1.65 var(--sans)}
+a{color:var(--info);text-decoration:none} a:hover{text-decoration:underline}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.toc{position:sticky;top:0;height:100vh;overflow:auto;background:var(--bg2);border-right:1px solid var(--border);padding:22px 14px 40px}
+nav.toc .brand{font-weight:700;font-size:15px;margin:0 8px 4px;letter-spacing:.2px}
+nav.toc .sub{font-size:12px;color:var(--faint);margin:0 8px 16px}
+nav.toc a{display:block;color:var(--muted);font-size:13.5px;padding:5px 10px;border-radius:6px;border-left:2px solid transparent}
+nav.toc a:hover{background:var(--panel);color:var(--text);text-decoration:none}
+nav.toc a.active{color:var(--text);background:var(--panel);border-left-color:var(--accent)}
+nav.toc .grp{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--faint);margin:16px 10px 4px}
+main{padding:40px clamp(16px,4vw,64px) 120px;max-width:1180px}
+header.hero{border:1px solid var(--border);background:linear-gradient(135deg,var(--panel),var(--panel2));border-radius:16px;padding:32px clamp(18px,3vw,36px);margin-bottom:36px}
+.hero h1{margin:0 0 6px;font-size:clamp(26px,3.4vw,38px);line-height:1.2}
+.hero p.lead{color:var(--muted);font-size:17px;margin:0 0 22px;max-width:820px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.kpi b{display:block;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums}
+.kpi span{font-size:12.5px;color:var(--muted)}
+section{margin:0 0 56px}
+h2{font-size:25px;margin:0 0 6px;padding-top:6px;display:flex;gap:12px;align-items:baseline}
+h2 .n{color:var(--accent);font-family:var(--mono);font-size:16px}
+h2 + .kicker{color:var(--muted);margin:0 0 18px}
+h3{font-size:18px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 14px;padding-left:22px} li{margin:3px 0}
+code{font-family:var(--mono);font-size:.88em;background:var(--panel2);border:1px solid var(--border);padding:1px 5px;border-radius:5px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow:auto;font:13px/1.55 var(--mono);margin:8px 0 16px;position:relative}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+pre .c{color:var(--faint)} pre .k{color:var(--purple)} pre .s{color:var(--accent)} pre .f{color:var(--info)} pre .num{color:var(--warn)}
+.copy{position:absolute;top:8px;right:8px;font:12px var(--sans);background:var(--panel2);color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:3px 9px;cursor:pointer}
+.copy:hover{color:var(--text)}
+.filetag{display:inline-block;font:12px var(--mono);color:var(--muted);background:var(--panel2);border:1px solid var(--border);border-bottom:0;border-radius:8px 8px 0 0;padding:4px 10px;margin-top:8px}
+.filetag + pre{margin-top:0;border-top-left-radius:0}
+table{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:14px;display:block;overflow-x:auto}
+thead{background:var(--panel2)}
+th,td{border:1px solid var(--border);padding:8px 11px;text-align:left;vertical-align:top}
+th{font-weight:600;white-space:nowrap}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--panel) 60%,transparent)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:12px 0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.callout{border-radius:10px;padding:14px 16px 6px;margin:14px 0;border:1px solid var(--border);border-left-width:4px}
+.callout .t{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;display:block}
+.plain{background:var(--info-dim);border-left-color:var(--info)} .plain .t{color:var(--info)}
+.tech{background:var(--purple-dim);border-left-color:var(--purple)} .tech .t{color:var(--purple)}
+.warn{background:var(--warn-dim);border-left-color:var(--warn)} .warn .t{color:var(--warn)}
+.danger{background:var(--danger-dim);border-left-color:var(--danger)} .danger .t{color:var(--danger)}
+.good{background:var(--accent-dim);border-left-color:var(--accent)} .good .t{color:var(--accent)}
+.badge{display:inline-block;font:600 11px/1 var(--mono);padding:4px 7px;border-radius:5px;vertical-align:1px;margin-right:4px;border:1px solid}
+.b-c{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+.b-i{color:var(--warn);border-color:var(--warn);background:var(--warn-dim)}
+.b-t{color:var(--danger);border-color:var(--danger);background:var(--danger-dim)}
+.b-n{color:var(--info);border-color:var(--info);background:var(--info-dim)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin:6px 0 14px}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps>li{counter-increment:s;position:relative;padding:2px 0 10px 42px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:50%;background:var(--accent-dim);color:var(--accent);font:700 13px/28px var(--mono);text-align:center;border:1px solid var(--accent)}
+.diagram{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;margin:12px 0 18px;overflow-x:auto}
+.diagram svg{display:block;width:100%;min-width:760px;height:auto}
+.cap{font-size:13px;color:var(--faint);margin:-8px 0 18px}
+svg text{font-family:var(--sans);fill:var(--text)}
+svg .box{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}
+svg .box-a{fill:var(--accent-dim);stroke:var(--accent);stroke-width:1.5}
+svg .box-i{fill:var(--info-dim);stroke:var(--info);stroke-width:1.5}
+svg .box-p{fill:var(--purple-dim);stroke:var(--purple);stroke-width:1.5}
+svg .box-w{fill:var(--warn-dim);stroke:var(--warn);stroke-width:1.5}
+svg .box-d{fill:var(--danger-dim);stroke:var(--danger);stroke-width:1.5}
+svg .ln{stroke:var(--muted);stroke-width:1.6;fill:none}
+svg .ln-a{stroke:var(--accent);stroke-width:2;fill:none}
+svg .ln-d{stroke:var(--danger);stroke-width:2;fill:none;stroke-dasharray:6 4}
+svg .ln-w{stroke:var(--warn);stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+svg .t-s{font-size:12px;fill:var(--muted)}
+svg .t-xs{font-size:11px;fill:var(--faint)}
+svg .t-b{font-weight:700}
+svg .t-m{font-family:var(--mono);font-size:11.5px;fill:var(--muted)}
+/* dashboard mock */
+.mock{background:#0f141c;border:1px solid #2b3545;border-radius:12px;color:#e6ebf2;font:13px var(--sans);overflow:hidden}
+.mock .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;background:#161d29;border-bottom:1px solid #2b3545}
+.mock .btn{padding:6px 12px;border-radius:7px;background:#243044;border:1px solid #33425a;font-weight:600;font-size:12.5px;color:#e6ebf2}
+.mock .btn.g{background:#1f4a28;border-color:#3f8a4b}
+.mock .btn.r{background:#b3261e;border-color:#ff5f56;color:#fff;padding:8px 16px}
+.mock .sel{padding:6px 10px;border-radius:7px;background:#0d1117;border:1px solid #33425a;color:#9aa6b8}
+.mock .sp{flex:1}
+.mock .meter{color:#9aa6b8;font:12px var(--mono)}
+.mock table{margin:0;font-size:12.5px;display:table}
+.mock th,.mock td{border:0;border-bottom:1px solid #222c3b;padding:7px 10px;color:#e6ebf2}
+.mock thead{background:#121925}
+.mock tbody tr:nth-child(even){background:transparent}
+.st{display:inline-block;padding:2px 8px;border-radius:20px;font:600 11px var(--mono)}
+.st.watch{background:#14304f;color:#58a6ff}.st.battle{background:#1f3d25;color:#5fd068}.st.join{background:#3d2f12;color:#f2b84b}.st.lobby{background:#2a1f45;color:#b48cff}.st.err{background:#3d1716;color:#ff5f56}
+.mock .log{font:12px/1.6 var(--mono);color:#9aa6b8;padding:10px 12px;background:#0b0f15;border-top:1px solid #2b3545;max-height:150px;overflow:auto}
+.mock .log b{color:#5fd068;font-weight:400}.mock .log i{color:#ff5f56;font-style:normal}
+.tree{font:13px/1.6 var(--mono);white-space:pre;background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow:auto}
+.tree .d{color:var(--info)} .tree .cm{color:var(--faint)}
+.phase{border:1px solid var(--border);border-radius:12px;padding:16px 18px;background:var(--panel);margin:12px 0}
+.phase h3{margin:0 0 4px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.phase h3 small{font:600 12px var(--mono);color:var(--accent)}
+.check{list-style:none;padding-left:0}.check li{padding-left:26px;position:relative}
+.check li::before{content:"";position:absolute;left:2px;top:6px;width:13px;height:13px;border:1.5px solid var(--muted);border-radius:3px}
+.quote{border-left:3px solid var(--accent);background:var(--panel);padding:14px 18px;border-radius:0 10px 10px 0;margin:10px 0 16px}
+.themebtn{position:fixed;top:14px;right:16px;z-index:9;background:var(--panel);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 10px;font:12px var(--sans);cursor:pointer}
+.menu-btn{display:none}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:fixed;inset:0 auto 0 0;width:280px;z-index:20;transform:translateX(-100%);transition:transform .2s}
+  nav.toc.open{transform:none;box-shadow:0 0 40px rgba(0,0,0,.5)}
+  .menu-btn{display:block;position:fixed;top:14px;left:16px;z-index:21;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font:13px var(--sans)}
+  main{padding-top:64px}
+}
+@media print{nav.toc,.themebtn,.menu-btn,.copy{display:none}.layout{display:block}}
+</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('nav.toc').classList.toggle('open')">☰ Contents</button>
+<button class="themebtn" id="themeBtn">◐ Theme</button>
+<div class="layout">
+<nav class="toc" id="toc">
+  <div class="brand">Bolna 12-second drop</div>
+  <div class="sub">Research · Architecture · Demo plan · Oct 2026</div>
+  <div class="grp">Understand</div>
+  <a href="#story">1 · Summary in 60 seconds</a>
+  <a href="#job">2 · The job, decoded</a>
+  <a href="#bolna">3 · How Bolna works</a>
+  <a href="#why12">4 · Why exactly 12 seconds</a>
+  <a href="#causes">5 · Root-cause matrix</a>
+  <a href="#playbook">6 · 30-minute diagnosis playbook</a>
+  <div class="grp">Prototype</div>
+  <a href="#lab">7 · Call Lab architecture</a>
+  <a href="#scenarios">8 · Fault scenarios</a>
+  <a href="#caller">9 · Fake Twilio caller</a>
+  <a href="#doctor">10 · Call Doctor</a>
+  <a href="#latency">11 · Latency instrumentation</a>
+  <a href="#layout">12 · Project layout</a>
+  <div class="grp">Execute</div>
+  <a href="#plan">13 · Build plan</a>
+  <a href="#need">14 · What I need from you</a>
+  <a href="#video">15 · Video plan</a>
+  <a href="#proposal">16 · Proposal</a>
+  <a href="#risks">17 · Risks</a>
+  <a href="#glossary">18 · Glossary</a>
+  <a href="#sources">19 · Sources</a>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>Bolna voice agent: calls drop at 12 seconds</h1>
+  <p class="lead">This page covers the research, the root-cause analysis and the prototype plan for the Upwork invite. The goal is to <b>reproduce the 12-second disconnect inside real Bolna code, diagnose it automatically, fix it, and show a stable, low-latency call</b>, all before the client gives us access to anything.</p>
+  <div class="kpis">
+    <div class="kpi"><b>10 s + 2 s</b><span>Bolna silence threshold plus its 2 s watchdog poll = "~12 s"</span></div>
+    <div class="kpi"><b>3</b><span>prime suspects, all ending as <code>inactivity_timeout</code> or a component error</span></div>
+    <div class="kpi"><b>30 min</b><span>to pin the cause given one execution ID</span></div>
+    <div class="kpi"><b>Real Bolna</b><span>open-source code running locally in Docker for the demo</span></div>
+    <div class="kpi"><b>&lt; 1 s</b><span>target turn latency, measured per turn</span></div>
+  </div>
+</header>
+
+<div class="legend">
+  <span><span class="badge b-c">CONFIRMED</span> read in Bolna's source or official docs</span>
+  <span><span class="badge b-i">INFERRED</span> strong reasoning, not yet observed on the client's calls</span>
+  <span><span class="badge b-t">TEST</span> to verify in the lab</span>
+</div>
+
+<!-- 1 -->
+<section id="story">
+  <h2><span class="n">01</span>Summary in 60 seconds</h2>
+  <div class="callout plain"><span class="t">Plain English</span>
+    <p>Bolna runs a small "is anyone still talking?" check every <b>2 seconds</b>. If neither the AI nor the caller has spoken for <b>10 seconds</b>, it hangs up. 10 seconds plus up to 2 seconds before the next check is <b>the 12 seconds the client sees</b>.</p>
+    <p>On a healthy call that never happens, because the agent greets the caller and the caller answers. So a clean 12-second drop means something in the pipeline is <b>silently broken</b>. Either the caller never hears the agent (a text-to-speech or audio-format problem), or the agent never "hears" the caller (a speech-to-text or encoding problem). Bolna can't tell the difference from real silence, so it ends the call as <code>inactivity_timeout</code>.</p>
+    <p>Our pitch: <i>"I reproduced your exact bug inside Bolna's own code, built a tool that names the cause from the call logs, and here's the fixed call running for 2 minutes."</i></p>
+  </div>
+  <ol class="steps">
+    <li><b>Run real Bolna locally</b> (open-source, Docker: the Bolna app plus Redis). It's the same engine the hosted platform is built on.</li>
+    <li><b>Call it with a fake Twilio</b>: a Python client that speaks Twilio's exact Media Streams protocol, streaming a scripted caller voice (WAV) and playing the agent's replies. No phone carrier, no trial-account blocks, and the same result on every take.</li>
+    <li><b>Flip one setting at a time</b> to reproduce each root cause. Each one drops at about 12 s.</li>
+    <li><b>Call Doctor</b> reads Bolna's logs and the caller's event log and draws a timeline. It shows who hung up and why, flags which event is <i>missing</i>, and names the cause.</li>
+    <li><b>Apply the fix</b> and show a 2-minute call with interruptions and a per-turn latency breakdown.</li>
+  </ol>
+</section>
+
+<!-- 2 -->
+<section id="job">
+  <h2><span class="n">02</span>The job, decoded</h2>
+  <table>
+    <thead><tr><th>Client wrote</th><th>What it really means</th><th>What we show</th></tr></thead>
+    <tbody>
+      <tr><td>"Calls disconnect after about 12 seconds"</td><td>Bolna's silence watchdog, or a component error, ends the call because audio or transcripts aren't flowing</td><td>Reproduce it, diagnose it automatically, fix it</td></tr>
+      <tr><td>"Build, configure, optimize agents (Bolna, ElevenLabs…)"</td><td>Agent JSON configuration: transcriber, LLM, synthesizer, task_config</td><td>Bad config next to good config, explained field by field</td></tr>
+      <tr><td>"Troubleshoot call failures, improve reliability"</td><td>Reading execution data: <code>hangup_by</code>, <code>hangup_reason</code>, raw logs</td><td>Call Doctor timeline plus rule-based root-cause hints</td></tr>
+      <tr><td>"Latency, speech quality, conversational flow"</td><td>Speech-to-text final, LLM time to first token, TTS first byte, interruptions</td><td>Per-turn latency bars, p50/p95, barge-in demo</td></tr>
+      <tr><td>"Twilio or other telephony"</td><td>Media Streams websocket, mulaw 8 kHz, <code>&lt;Connect&gt;&lt;Stream&gt;</code>, error codes 3192x</td><td>A fake Twilio caller that implements the protocol exactly</td></tr>
+      <tr><td>"LLMs, prompts, APIs, webhooks"</td><td>Bolna <code>/v2/agent</code>, <code>/call</code>, <code>/executions</code>, webhook payloads</td><td>Agent created via API, execution data parsed</td></tr>
+      <tr><td>Skills listed: Illustrator, Illustration, Audio Production</td><td>Mis-tagged by the client; ignore</td><td>(nothing)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 3 -->
+<section id="bolna">
+  <h2><span class="n">03</span>How Bolna works</h2>
+  <p class="kicker">Bolna is an open-source Python framework (<code>bolna-ai/bolna</code>, MIT, about 790 stars, updated daily). The hosted platform (<code>api.bolna.ai</code>, <code>platform.bolna.ai</code>) is built on it. <span class="badge b-c">C</span></p>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 300" role="img" aria-label="Bolna call pipeline">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+    <rect class="box-i" x="20" y="100" width="150" height="90" rx="10"/><text x="95" y="132" text-anchor="middle" class="t-b">Phone / Twilio</text><text x="95" y="152" text-anchor="middle" class="t-xs">&lt;Connect&gt;&lt;Stream&gt;</text><text x="95" y="168" text-anchor="middle" class="t-xs">mulaw 8 kHz, 20 ms frames</text>
+    <rect class="box-p" x="230" y="40" width="180" height="210" rx="10"/><text x="320" y="64" text-anchor="middle" class="t-b">TaskManager</text>
+    <text x="244" y="90" class="t-xs">TelephonyInputHandler</text><text x="244" y="106" class="t-xs">  start / media / mark / stop</text>
+    <text x="244" y="132" class="t-xs">TelephonyOutputHandler</text><text x="244" y="148" class="t-xs">  media + mark → Twilio</text>
+    <rect class="box-d" x="242" y="168" width="156" height="66" rx="8"/><text x="320" y="190" text-anchor="middle" class="t-s" style="font-weight:700">watchdog · every 2 s</text><text x="320" y="208" text-anchor="middle" class="t-xs">hangup_after_silence = 10</text><text x="320" y="224" text-anchor="middle" class="t-xs">call_terminate = 90</text>
+    <rect class="box-a" x="470" y="30" width="150" height="62" rx="10"/><text x="545" y="56" text-anchor="middle" class="t-b">Transcriber</text><text x="545" y="76" text-anchor="middle" class="t-xs">Deepgram · encoding/rate</text>
+    <rect class="box-a" x="470" y="114" width="150" height="62" rx="10"/><text x="545" y="140" text-anchor="middle" class="t-b">LLM agent</text><text x="545" y="160" text-anchor="middle" class="t-xs">OpenAI · Groq · …</text>
+    <rect class="box-a" x="470" y="198" width="150" height="62" rx="10"/><text x="545" y="224" text-anchor="middle" class="t-b">Synthesizer</text><text x="545" y="244" text-anchor="middle" class="t-xs">ElevenLabs · ulaw_8000</text>
+    <rect class="box" x="700" y="60" width="270" height="170" rx="10"/><text x="835" y="86" text-anchor="middle" class="t-b">Execution record</text>
+    <text x="716" y="112" class="t-xs">status: completed / call-disconnected</text>
+    <text x="716" y="132" class="t-xs">telephony_data.hangup_by / hangup_reason</text>
+    <text x="716" y="152" class="t-xs">latency_data · transcript · cost</text>
+    <text x="716" y="172" class="t-xs">GET /executions/{id}/log → raw logs</text>
+    <text x="716" y="192" class="t-xs">webhook_url → POST on each status</text>
+    <line class="ln" x1="170" y1="145" x2="228" y2="145" marker-end="url(#ar)"/>
+    <line class="ln" x1="410" y1="70" x2="468" y2="62" marker-end="url(#ar)"/>
+    <line class="ln" x1="545" y1="92" x2="545" y2="112" marker-end="url(#ar)"/>
+    <line class="ln" x1="545" y1="176" x2="545" y2="196" marker-end="url(#ar)"/>
+    <line class="ln" x1="468" y1="228" x2="412" y2="140" marker-end="url(#ar)"/>
+    <line class="ln" x1="620" y1="145" x2="698" y2="145" marker-end="url(#ar)"/>
+  </svg>
+  </div>
+  <p class="cap">Figure 1: The Bolna pipeline. Closing the websocket ends a <code>&lt;Connect&gt;&lt;Stream&gt;</code> call, because Bolna's TwiML has nothing after it.</p>
+  <div class="grid2">
+    <div class="card"><h4>Agent configuration (JSON)</h4>
+<pre><code>agent_config.tasks[0]
+  tools_config.transcriber {provider, model, encoding, sampling_rate, endpointing}
+  tools_config.llm_agent   {agent_type, llm_config{provider, model}}
+  tools_config.synthesizer {provider, provider_config{voice_id, model}, audio_format}
+  tools_config.input/output {provider: "twilio", format: "wav"}
+  task_config {hangup_after_silence, call_terminate, check_if_user_online,
+               trigger_user_online_message_after, hangup_after_LLMCall,
+               voicemail, incremental_delay, number_of_words_for_interruption}
+agent_prompts.task_1.system_prompt</code></pre></div>
+    <div class="card"><h4>Hosted API used in the demo</h4>
+      <ul>
+        <li><code>POST /v2/agent</code> → <code>agent_id</code></li>
+        <li><code>POST /call</code> <code>{agent_id, recipient_phone_number}</code> → <code>execution_id</code></li>
+        <li><code>GET /executions/{id}</code>: status, <code>hangup_by</code>, <code>hangup_reason</code>, <code>latency_data</code></li>
+        <li><code>GET /executions/{id}/log</code>: raw logs for each component</li>
+        <li>Pricing: $5 free credit, about $0.06/min on preferred models</li>
+      </ul>
+      <p>Self-hosted: <code>docker compose up</code> in <code>local_setup/</code> starts <code>bolna-app :5001</code> + <code>redis</code> (plus twilio-app and ngrok for real calls).</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="why12">
+  <h2><span class="n">04</span>Why exactly 12 seconds</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 250" role="img" aria-label="12 second timeline">
+    <line class="ln" x1="40" y1="160" x2="960" y2="160"/>
+    <g class="t-m">
+      <text x="36" y="182">0</text><text x="183" y="182">2</text><text x="337" y="182">4</text><text x="490" y="182">6</text><text x="643" y="182">8</text><text x="790" y="182">10</text><text x="943" y="182">12 s</text>
+    </g>
+    <g style="stroke:var(--danger);stroke-width:2">
+      <line x1="193" y1="150" x2="193" y2="170"/><line x1="346" y1="150" x2="346" y2="170"/><line x1="500" y1="150" x2="500" y2="170"/><line x1="653" y1="150" x2="653" y2="170"/><line x1="806" y1="150" x2="806" y2="170"/><line x1="960" y1="140" x2="960" y2="176"/>
+    </g>
+    <text x="200" y="205" class="t-xs" style="fill:var(--danger)">watchdog checks every 2 s (red ticks)</text>
+    <rect class="box-i" x="40" y="40" width="40" height="40" rx="5"/><text x="44" y="30" class="t-xs">stream start = silence clock starts</text>
+    <rect class="box-w" x="85" y="40" width="200" height="40" rx="5"/><text x="95" y="64" style="font-size:12px">greeting should play here…</text>
+    <rect x="285" y="40" width="520" height="40" rx="5" style="fill:none;stroke:var(--border);stroke-dasharray:5 4"/><text x="420" y="64" class="t-s">…but no acknowledged agent audio and no transcript</text>
+    <rect class="box-d" x="806" y="40" width="154" height="40" rx="5"/><text x="815" y="64" style="font-size:12px">&gt;10 s silent → hangup</text>
+    <text x="40" y="235" class="t-s">"AI last spoke" = last Twilio <tspan class="t-m">mark</tspan> ack (or stream start) · "user last spoke" = last interim transcript (∞ if none) · both &gt; 10 s → <tspan style="fill:var(--danger)">inactivity_timeout</tspan> between 10.0 and 12.0 s</text>
+  </svg>
+  </div>
+  <div class="callout tech"><span class="t">From the source code <span class="badge b-c">C</span></span>
+    <ul>
+      <li><code>task_manager.py</code>: <code>hang_conversation_after = conversation_config.get("hangup_after_silence", 10)</code>, and <code>__check_for_completion()</code> loops with <code>await asyncio.sleep(2)</code>.</li>
+      <li>The "user last spoke" time is reset only by a transcript. The "AI last spoke" time is reset by Twilio's <code>mark</code> acknowledgement, which arrives after the audio has actually played.</li>
+      <li>The hangup check runs <b>before</b> the "are you still there?" check. With both set to 10 s, the reminder never plays.</li>
+      <li>Other hard-coded timeouts: <code>__await_stream_sid(timeout=10)</code>, Deepgram connect timeout 10 s, <code>hangup_mark_event_timeout=10</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="causes">
+  <h2><span class="n">05</span>Root-cause matrix</h2>
+  <table>
+    <thead><tr><th>#</th><th>Cause</th><th>Mechanism</th><th>Signature in logs / execution</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td><b>STT encoding mismatch</b></td><td>The transcriber is set to <code>linear16/16000</code> but Twilio sends <code>mulaw/8000</code>. Deepgram decodes noise and returns empty transcripts.</td><td><code>inactivity_timeout</code>, no user turns in the transcript, no "interim transcript" lines</td><td><code>encoding: mulaw, sampling_rate: 8000</code></td></tr>
+      <tr><td>B</td><td><b>Agent audio never plays</b></td><td>A TTS failure (key, quota, voice ID), wrong output format, or no welcome audio (OSS issue #507). No <code>mark</code> ack comes back, so the "AI last spoke" clock never resets.</td><td><code>inactivity_timeout</code> or <code>synthesizer_error</code>, empty synthesizer turns, "No welcome message audio"</td><td><code>ulaw_8000</code> output, a valid voice and key, welcome message configured</td></tr>
+      <tr><td>C</td><td><b>Deepgram idle close</b></td><td>No audio reaches Deepgram within 10 s, so it closes with 1011 / NET-0001.</td><td><code>transcriber_connection_error</code>, "WebSocket closed 1011"</td><td>Forward media immediately, KeepAlive, correct stream track</td></tr>
+      <tr><td>D</td><td><b>Silence threshold too tight</b></td><td><code>hangup_after_silence</code> 10 combined with slow first turns and an online check that never fires</td><td><code>inactivity_timeout</code> even on calls that work</td><td>20–30 s, online check at 8–12 s, welcome message</td></tr>
+      <tr><td>E</td><td><b>Exception closes the socket</b></td><td>An LLM error, a missing agent in Redis, a tool-call bug (#879). Twilio then logs 31921.</td><td><code>llm_error</code>, code 1006, a traceback</td><td>Fix the component, add retries</td></tr>
+      <tr><td>F</td><td>Hard cap / LLM hangup / voicemail</td><td><code>call_terminate</code> set too small, <code>hangup_after_LLMCall</code> false positive, voicemail misdetection</td><td><code>max_duration_reached</code>, <code>llm_prompted_hangup</code>, <code>voicemail_detected</code></td><td>Config and prompt review</td></tr>
+      <tr><td>G</td><td>Twilio trial / setup</td><td>Trial accounts strip <code>&lt;Stream&gt;</code> or require "press any key"; a stream URL with a query string gives 31920</td><td>Twilio Debugger 31920/31921, the trial announcement</td><td>Upgrade the account, use <code>&lt;Parameter&gt;</code> instead of a query string</td></tr>
+    </tbody>
+  </table>
+  <p class="cap">A, B and C are the top suspects for a clean ~12 s drop. Infrastructure idle timeouts (load balancer 60 s, Cloudflare 100 s, ngrok) work on a different time scale and are unlikely here.</p>
+</section>
+
+<!-- 6 -->
+<section id="playbook">
+  <h2><span class="n">06</span>30-minute diagnosis playbook</h2>
+  <ol class="steps">
+    <li><b>(3 min) Get the IDs.</b> One failing call: CallSid, Bolna <code>execution_id</code>, the Deepgram request ID, and UTC times of answer and hangup.</li>
+    <li><b>(5 min) Who hung up?</b> Bolna's <code>hangup_by / hangup_code / hangup_reason</code>, and Twilio's "Who hung up", Debugger alerts (31920/31921/31924/11200) and any answering-machine detection result. The reason code often names the culprit outright.</li>
+    <li><b>(5 min) Config review.</b> <code>hangup_after_silence</code>, <code>call_terminate</code>, transcriber <code>encoding/sampling_rate</code>, synthesizer format and voice, voicemail, the LLM hangup prompt, the online check.</li>
+    <li><b>(7 min) Line up the logs.</b> In order: websocket accepted → <code>start</code> → first <code>media</code> → STT connected → first interim transcript → TTS first chunk → first <code>mark</code> ack → hangup line. <b>The first missing event is the broken component.</b></li>
+    <li><b>(5 min) Test by elimination.</b> Set <code>hangup_after_silence</code> to 60. If the drop moves, the silence watchdog is confirmed, and the task becomes finding why nothing is flowing. Swap the TTS or STT provider to isolate the faulty component.</li>
+    <li><b>(5 min) Platform checks.</b> Twilio trial status, container restarts or out-of-memory kills, worker count, the ngrok inspector.</li>
+  </ol>
+</section>
+
+<!-- 7 -->
+<section id="lab">
+  <h2><span class="n">07</span>Call Lab architecture (the prototype)</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 400" role="img" aria-label="Call lab architecture">
+    <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+    <rect class="box-i" x="20" y="40" width="230" height="150" rx="10"/><text x="135" y="64" text-anchor="middle" class="t-b">Fake Twilio caller</text>
+    <text x="34" y="88" class="t-xs">connected → start(streamSid, mulaw/8000)</text><text x="34" y="106" class="t-xs">media: 160 B / 20 ms (base64)</text><text x="34" y="124" class="t-xs">answers mark · plays agent audio</text><text x="34" y="142" class="t-xs">scripted caller WAV or live mic</text><text x="34" y="160" class="t-xs">→ events.jsonl + stereo call.wav</text>
+    <rect class="box-p" x="330" y="30" width="290" height="190" rx="10"/><text x="475" y="54" text-anchor="middle" class="t-b">Real Bolna (Docker)</text>
+    <text x="344" y="80" class="t-xs">bolna-app :5001  ws /chat/v1/{agent_id}</text><text x="344" y="98" class="t-xs">redis (agent configs)</text>
+    <text x="344" y="122" class="t-xs">agents: broken-encoding · broken-tts ·</text><text x="344" y="138" class="t-xs">        no-audio · tight-silence · fixed</text>
+    <text x="344" y="162" class="t-xs">→ docker logs (timestamps)</text>
+    <rect class="box" x="700" y="30" width="280" height="190" rx="10"/><text x="840" y="54" text-anchor="middle" class="t-b">Providers (your keys)</text>
+    <text x="716" y="82" class="t-xs">Deepgram nova-3 · mulaw/8000</text><text x="716" y="102" class="t-xs">OpenAI / Groq · streaming</text><text x="716" y="122" class="t-xs">ElevenLabs flash v2.5 · ulaw_8000</text><text x="716" y="142" class="t-xs">(optional) Cartesia A/B</text>
+    <rect class="box-a" x="230" y="270" width="540" height="110" rx="10"/><text x="500" y="294" text-anchor="middle" class="t-b">Call Doctor (FastAPI + web UI)</text>
+    <text x="246" y="318" class="t-xs">ingest: caller events.jsonl + Bolna docker logs + (client) /executions/{id} + /log + Twilio Call Events</text>
+    <text x="246" y="338" class="t-xs">→ unified timeline · who hung up · missing-event detector · rule-based root cause · latency per turn</text>
+    <text x="246" y="358" class="t-xs">→ "Diagnosis: transcriber encoding linear16/16k vs stream mulaw/8k → no transcripts → inactivity_timeout @ 11.6 s"</text>
+    <line class="ln" x1="250" y1="115" x2="328" y2="115" marker-end="url(#ar2)"/><text x="262" y="108" class="t-xs">ws</text>
+    <line class="ln" x1="620" y1="115" x2="698" y2="115" marker-end="url(#ar2)"/>
+    <line class="ln" x1="135" y1="190" x2="300" y2="268" marker-end="url(#ar2)"/>
+    <line class="ln" x1="475" y1="220" x2="475" y2="268" marker-end="url(#ar2)"/>
+  </svg>
+  </div>
+  <p class="cap">Figure 2: Every piece runs locally. The only external calls are to Deepgram, the LLM and ElevenLabs, using your keys. An optional real Twilio call is filmed once as proof.</p>
+  <div class="callout good"><span class="t">Why this convinces the client</span>
+    <p>It's <b>their engine</b> (real Bolna code, not a look-alike), <b>their symptom</b> (a drop at about 12 s with <code>inactivity_timeout</code>), and <b>their logs</b>: the Doctor can read Bolna execution data and raw logs as well. Given one execution ID on day 1, we run the same tool on their call.</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section id="scenarios">
+  <h2><span class="n">08</span>Fault scenarios (one Bolna agent each)</h2>
+  <table>
+    <thead><tr><th>Agent</th><th>Change from the good config</th><th>Expected result</th></tr></thead>
+    <tbody>
+      <tr><td><code>broken-encoding</code></td><td>transcriber <code>encoding: linear16, sampling_rate: 16000</code></td><td>Greeting plays, caller speaks, no transcript, hangup at 10–12 s with <code>inactivity_timeout</code> <span class="badge b-t">TEST</span></td></tr>
+      <tr><td><code>broken-tts</code></td><td>synthesizer: invalid voice ID or wrong format</td><td>Dead air, then hangup at 10–12 s with <code>synthesizer_error</code> or <code>inactivity_timeout</code> <span class="badge b-t">TEST</span></td></tr>
+      <tr><td><code>no-audio</code></td><td>Caller sends <code>start</code> but holds back <code>media</code> (simulates a dropped inbound track)</td><td>Deepgram NET-0001 / 1011, then <code>transcriber_connection_error</code> <span class="badge b-t">TEST</span></td></tr>
+      <tr><td><code>tight-silence</code></td><td>Good pipeline, <code>hangup_after_silence: 10</code>, the caller thinks for 11 s</td><td>A healthy-looking call dies mid-conversation</td></tr>
+      <tr><td><code>fixed</code></td><td>mulaw/8000, ulaw_8000, welcome message, silence 25 s, online check 10 s, interruptions enabled</td><td>2+ minute call, barge-in, latency under 1 s at p50</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 9 -->
+<section id="caller">
+  <h2><span class="n">09</span>The fake Twilio caller</h2>
+  <ul>
+    <li>Sends exactly what Twilio sends: <code>connected</code>, then <code>start</code> with <code>streamSid</code>, <code>callSid</code>, <code>mediaFormat {audio/x-mulaw, 8000, 1}</code> and <code>customParameters</code>, then 160-byte, 20 ms <code>media</code> frames, then <code>stop</code>.</li>
+    <li>Plays the agent's <code>media</code> through the speakers live, so it's audible in the video. Echoes <code>mark</code> events back in playback order, as Twilio does, and honours <code>clear</code> (interruption).</li>
+    <li><b>Scripted caller</b>: lines come from a caller script, rendered once to mulaw WAV with a TTS voice and cached, then played with realistic pauses. Every take is identical.</li>
+    <li>Writes <code>events.jsonl</code> with wall-clock timestamps, plus <code>call.wav</code> (stereo: caller left, agent right) for the video.</li>
+    <li>Optional <code>--mic</code> mode: talk to the agent live.</li>
+  </ul>
+</section>
+
+<!-- 10 -->
+<section id="doctor">
+  <h2><span class="n">10</span>Call Doctor</h2>
+  <ul>
+    <li><b>Inputs:</b> the caller's <code>events.jsonl</code>, Bolna container logs (parsed by pattern), and adapters for the client's data: <code>GET /executions/{id}</code>, <code>/executions/{id}/log</code>, Twilio Call Events and Voice Insights "Who hung up".</li>
+    <li><b>Timeline UI:</b> swim lanes for Caller, Telephony, STT, LLM, TTS and Watchdog. Events plotted against call time, with the 10 s silence window shaded and the hangup marked.</li>
+    <li><b>Missing-event detector:</b> walks the expected chain (start → media → STT connect → interim transcript → TTS first byte → mark ack). The <b>first gap</b> is highlighted.</li>
+    <li><b>Rules engine:</b> for example "inactivity_timeout + no user transcript + transcriber encoding ≠ stream encoding → <b>encoding mismatch</b> (confidence high)".</li>
+    <li><b>Output:</b> a one-paragraph diagnosis with the fix (as a config diff), as HTML and as text to paste into an Upwork message.</li>
+  </ul>
+</section>
+
+<!-- 11 -->
+<section id="latency">
+  <h2><span class="n">11</span>Latency instrumentation</h2>
+  <table>
+    <thead><tr><th>Stage</th><th>Measured as</th><th>Target p50 / p95</th></tr></thead>
+    <tbody>
+      <tr><td>Endpointing + STT final</td><td>caller stops speaking → final transcript</td><td>≤ 350 / 500 ms</td></tr>
+      <tr><td>LLM first token</td><td>request → first token</td><td>≤ 375 / 750 ms</td></tr>
+      <tr><td>TTS first byte</td><td>first text → first audio</td><td>≤ 100 / 250 ms</td></tr>
+      <tr><td><b>Turn gap</b></td><td>caller stops → first agent audio heard (caller side)</td><td><b>&lt; 800 ms / 1.2 s</b></td></tr>
+    </tbody>
+  </table>
+  <p class="cap">These targets follow Twilio's guidance for STT → LLM → TTS chains. Our numbers are measured inside the platform and exclude the phone network. Bolna's own <code>latency_data</code> is shown next to ours.</p>
+</section>
+
+<!-- 12 -->
+<section id="layout">
+  <h2><span class="n">12</span>Project layout</h2>
+<div class="tree"><span class="d">bolna-call-lab/</span>
+├─ <span class="d">bolna/</span>                 <span class="cm"># git clone bolna-ai/bolna (unchanged engine) + local_setup docker-compose</span>
+├─ <span class="d">agents/</span>                <span class="cm"># broken-encoding.json · broken-tts.json · tight-silence.json · fixed.json</span>
+├─ <span class="d">lab/</span>
+│  ├─ fake_twilio.py      <span class="cm"># Media Streams client: WAV / mic, playback, marks, events.jsonl, call.wav</span>
+│  ├─ scenarios.py        <span class="cm"># create agents via POST /agent, run each scenario end to end</span>
+│  ├─ caller_script.yaml  <span class="cm"># what the "caller" says and when (+ cached TTS audio)</span>
+│  └─ g711.py             <span class="cm"># mulaw ↔ PCM (numpy table, no audioop)</span>
+├─ <span class="d">doctor/</span>
+│  ├─ ingest.py           <span class="cm"># caller events, docker logs, Bolna executions API, Twilio Call Events</span>
+│  ├─ rules.py            <span class="cm"># missing-event detector + root-cause rules</span>
+│  ├─ app.py              <span class="cm"># FastAPI: /calls, /calls/{id} timeline</span>
+│  └─ <span class="d">ui/</span>                <span class="cm"># timeline, latency bars, diagnosis card</span>
+├─ <span class="d">demo/</span>                  <span class="cm"># scripted recorder (like ProTanki): director + make_video + voice-over studio</span>
+├─ .env.example           <span class="cm"># DEEPGRAM / OPENAI or GROQ / ELEVENLABS keys</span>
+└─ README.md</div>
+</section>
+
+<!-- 13 -->
+<section id="plan">
+  <h2><span class="n">13</span>Build plan</h2>
+  <div class="phase"><h3>Phase 0: Spike <small>~1 h</small></h3>
+    <ul class="check"><li>Clone Bolna and bring up <code>bolna-app + redis</code> with Docker</li><li>Create one good agent with <code>POST /agent</code></li><li>Fake caller connects to <code>/chat/v1/{agent_id}</code>, hears the greeting, gets a reply</li><li>✅ Milestone: real Bolna talking over the Twilio protocol on this PC</li></ul></div>
+  <div class="phase"><h3>Phase 1: Reproduce <small>~3 h</small></h3>
+    <ul class="check"><li>Four broken agents plus the fixed one</li><li>Scripted caller WAV with timed lines and an 11 s "thinking" pause</li><li>Confirm each fault drops at 10–12 s with the expected reason</li></ul></div>
+  <div class="phase"><h3>Phase 2: Call Doctor <small>~4 h</small></h3>
+    <ul class="check"><li>Log parsers, unified timeline, missing-event detector, rules</li><li>Web UI in the same visual language as ProTanki Commander</li><li>Bolna executions-API and Twilio adapters (tested with sample payloads from the docs)</li></ul></div>
+  <div class="phase"><h3>Phase 3: Quality and latency <small>~2 h</small></h3>
+    <ul class="check"><li>Fixed agent: interruption test, latency p50/p95, optional ElevenLabs vs Cartesia A/B</li><li>Optional: one real Twilio call to your phone, filmed (needs an upgraded Twilio account)</li></ul></div>
+  <div class="phase"><h3>Phase 4: Video <small>~1 h + your voice-over</small></h3>
+    <ul class="check"><li>Demo director (scripted scenes, backdrop, captions) as before</li><li>Voice-over Studio reused: you read and record, it merges</li></ul></div>
+</section>
+
+<!-- 14 -->
+<section id="need">
+  <h2><span class="n">14</span>What I need from you</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Why</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td><b>Deepgram API key</b></td><td>The STT Bolna uses by default</td><td>Free credit on signup</td></tr>
+      <tr><td><b>OpenAI or Groq API key</b></td><td>The LLM</td><td>Cents for the demo (Groq has a free tier)</td></tr>
+      <tr><td><b>ElevenLabs API key</b></td><td>TTS (the provider the client named)</td><td>Free tier is enough; a $5 Starter plan avoids limits</td></tr>
+      <tr><td>Bolna account (optional)</td><td>Show the same settings in the hosted dashboard</td><td>$5 free credit</td></tr>
+      <tr><td>Twilio upgrade (optional)</td><td>One real phone-call proof clip</td><td>About $20 top-up + about $1/month number</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn"><span class="t">How to hand over keys</span>
+    <p>You create the accounts and put the keys in <code>.env</code> yourself. I never type passwords or keys into websites. Rotate the keys after recording, in case one appears on screen.</p>
+  </div>
+</section>
+
+<!-- 15 -->
+<section id="video">
+  <h2><span class="n">15</span>Video plan (about 4:30)</h2>
+  <table>
+    <thead><tr><th>Time</th><th>On screen</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr><td>0:00–0:20</td><td>Title card, then Call Doctor showing a red hangup at 11.6 s</td><td>"Your calls drop at about 12 s. That's Bolna's 10-second silence watchdog plus its 2-second check. Here's why it fires and how to fix it."</td></tr>
+      <tr><td>0:20–0:50</td><td>Architecture diagram with the timers in red</td><td>Where audio and transcripts flow, and where they silently break</td></tr>
+      <tr><td>0:50–1:50</td><td>Reproduce: real Bolna, the broken-encoding agent; caller audio audible; drops at about 12 s</td><td>"This is Bolna's own engine, and this is your symptom"</td></tr>
+      <tr><td>1:50–2:30</td><td>Call Doctor: swim lanes, missing event highlighted, the diagnosis card</td><td>"It names the cause from the logs automatically"</td></tr>
+      <tr><td>2:30–3:00</td><td>Quick montage of broken-tts and no-audio, each with its own signature</td><td>"Three different causes, the same 12-second symptom; the logs tell them apart"</td></tr>
+      <tr><td>3:00–3:50</td><td>Fixed agent: 2-minute call with an interruption; latency bars p50/p95</td><td>"Fixed, stable, about 0.8 s responses"</td></tr>
+      <tr><td>3:50–4:15</td><td>Config diff (optionally the same fields in the Bolna dashboard)</td><td>"These are the exact settings to change"</td></tr>
+      <tr><td>4:15–4:30</td><td>End card</td><td>"Send me one execution ID and I'll tell you which one it is within an hour."</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 16 -->
+<section id="proposal">
+  <h2><span class="n">16</span>Proposal (draft)</h2>
+  <div class="quote" id="proposalText">
+    <p>Hi! A drop at about 12 seconds in Bolna is almost always its <b>10-second silence watchdog</b> (it checks every 2 s, so it fires between 10 and 12 s). It fires because the agent's audio or the caller's transcripts are silently not flowing, most often a transcriber encoding mismatch (linear16/16k vs Twilio's mulaw/8k) or a TTS/output-format failure.</p>
+    <p>I reproduced this inside Bolna's own open-source engine, built a small "Call Doctor" that names the cause from the call logs, and recorded the fix: <b>[Loom link]</b></p>
+    <p>To pin down yours quickly:<br>
+    1. Hosted Bolna or self-hosted? Twilio, Plivo or Exotel, and is the Twilio account on trial?<br>
+    2. One or two execution IDs, plus the <code>hangup_by / hangup_reason</code> they show<br>
+    3. Does every call drop, inbound and outbound? Does the greeting play, and does the agent ever reply?<br>
+    4. Which transcriber and voice are configured, and are voicemail detection or prompt-based hangup on?</p>
+    <p>Given one execution ID I can usually name the cause within an hour, then tune latency and conversation flow for production.</p>
+  </div>
+  <button class="copy" style="position:static" onclick="navigator.clipboard.writeText(document.getElementById('proposalText').innerText);this.textContent='Copied ✓'">Copy proposal</button>
+  <p style="margin-top:12px"><b>Rate:</b> the client posted $5–50/hr and wants an expert. Bid $40–45/hr. Optionally offer a fixed first milestone, "root cause + fix", so the client takes no risk on the first deliverable.</p>
+</section>
+
+<!-- 17 -->
+<section id="risks">
+  <h2><span class="n">17</span>Risks</h2>
+  <table>
+    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Bolna's local setup is fragile (the maintainers say so)</td><td>Phase 0 spike first. Fallback: a minimal pipeline of our own that uses the same protocol and timers.</td></tr>
+      <tr><td>The hosted platform differs slightly from the open-source code</td><td>Say "as in the open-source engine"; verify field names against the current docs</td></tr>
+      <tr><td>The client's cause is something else (for example a carrier issue)</td><td>The playbook and the Doctor cover all of causes A–G, and the pitch is the method, not one guess</td></tr>
+      <tr><td>API costs</td><td>Cache the caller audio; total probably under $10, or about $30 with Twilio</td></tr>
+      <tr><td>Keys visible on screen</td><td>Keys only in <code>.env</code>, never shown; rotate after recording</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 18 -->
+<section id="glossary">
+  <h2><span class="n">18</span>Glossary</h2>
+  <table>
+    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>STT / TTS</td><td>Speech-to-text (hearing the caller) and text-to-speech (the agent's voice)</td></tr>
+      <tr><td>Media Streams</td><td>Twilio's websocket that carries live call audio in both directions</td></tr>
+      <tr><td>mulaw 8 kHz</td><td>The compressed audio format used by phone calls; every component has to agree on it</td></tr>
+      <tr><td>mark</td><td>A Twilio message that confirms a piece of agent audio has finished playing</td></tr>
+      <tr><td>Endpointing</td><td>Deciding that the caller has finished speaking</td></tr>
+      <tr><td>Barge-in</td><td>The caller interrupting the agent; the agent should stop talking immediately</td></tr>
+      <tr><td>Execution</td><td>Bolna's record of one call (status, transcript, hangup reason, latency)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 19 -->
+<section id="sources">
+  <h2><span class="n">19</span>Sources</h2>
+  <ul>
+    <li><a href="https://github.com/bolna-ai/bolna" target="_blank" rel="noopener">github.com/bolna-ai/bolna</a> (task_manager.py, constants.py, deepgram_transcriber.py, elevenlabs_synthesizer.py, local_setup)</li>
+    <li><a href="https://github.com/bolna-ai/bolna/issues/507" target="_blank" rel="noopener">Issue #507: complete silence on Twilio calls</a> · <a href="https://github.com/bolna-ai/bolna/pull/514" target="_blank" rel="noopener">PR #514</a> · <a href="https://github.com/bolna-ai/bolna/issues/147" target="_blank" rel="noopener">#147 trial cut-off</a> · <a href="https://github.com/bolna-ai/bolna/issues/900" target="_blank" rel="noopener">#900</a> · <a href="https://github.com/bolna-ai/bolna/issues/879" target="_blank" rel="noopener">#879</a></li>
+    <li><a href="https://www.bolna.ai/docs/api-reference/agent/create.md" target="_blank" rel="noopener">Bolna: create agent</a> · <a href="https://www.bolna.ai/docs/post-call/execution-payload.md" target="_blank" rel="noopener">execution payload</a> · <a href="https://www.bolna.ai/docs/post-call/list-phone-call-hangup-status.md" target="_blank" rel="noopener">hangup statuses</a> · <a href="https://www.bolna.ai/docs/troubleshooting/calls-fail-or-drop-early.md" target="_blank" rel="noopener">calls fail or drop early</a></li>
+    <li><a href="https://developers.deepgram.com/docs/keep-alive" target="_blank" rel="noopener">Deepgram KeepAlive</a> · <a href="https://developers.deepgram.com/docs/stt-troubleshooting-websocket-data-and-net-errors" target="_blank" rel="noopener">NET/DATA errors</a></li>
+    <li><a href="https://www.twilio.com/docs/voice/media-streams/websocket-messages" target="_blank" rel="noopener">Twilio Media Streams messages</a> · <a href="https://www.twilio.com/docs/api/errors/31921" target="_blank" rel="noopener">31921</a> · <a href="https://www.twilio.com/docs/usage/trials/try-out-voice" target="_blank" rel="noopener">trial voice limits</a> · <a href="https://static0.twilio.com/en-us/blog/developers/best-practices/guide-core-latency-ai-voice-agents" target="_blank" rel="noopener">latency guide</a></li>
+    <li><a href="https://elevenlabs.io/docs/cookbooks/text-to-speech/twilio" target="_blank" rel="noopener">ElevenLabs + Twilio</a> · <a href="https://elevenlabs.io/blog/websocket-improvements-reliability-and-custom-timeout" target="_blank" rel="noopener">ElevenLabs websocket timeouts</a></li>
+  </ul>
+</section>
+</main>
+</div>
+
+<script>
+// copy buttons on code blocks
+document.querySelectorAll('pre').forEach(pre=>{
+  const b=document.createElement('button');b.className='copy';b.textContent='Copy';
+  b.onclick=()=>{navigator.clipboard.writeText(pre.innerText.replace(/^Copy\n?/,'')).then(()=>{b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy',1200)})};
+  pre.appendChild(b);
+});
+// scrollspy
+const links=[...document.querySelectorAll('nav.toc a')];
+const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.remove('active'));const a=map.get(e.target.id);if(a)a.classList.add('active')}})},{rootMargin:'-20% 0px -70% 0px'});
+document.querySelectorAll('main section').forEach(s=>obs.observe(s));
+links.forEach(a=>a.addEventListener('click',()=>document.querySelector('nav.toc').classList.remove('open')));
+// theme toggle
+const root=document.documentElement;let t=null;try{t=localStorage.getItem('pt-theme')}catch(e){}
+if(t)root.dataset.theme=t;
+document.getElementById('themeBtn').onclick=()=>{
+  const cur=root.dataset.theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+  root.dataset.theme=cur==='dark'?'light':'dark';try{localStorage.setItem('pt-theme',root.dataset.theme)}catch(e){}
+};
+</script>
+</body>
+</html>

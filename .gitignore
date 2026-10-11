@@ -1,0 +1,10 @@
+.env
+.venv/
+runs/
+agent_data/
+__pycache__/
+*.pyc
+vendor/
+recordings/
+logs/
+.claude/
