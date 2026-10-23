@@ -33,3 +33,7 @@ python -m uvicorn lab.server:app --port 7860
 ```
 
 Open http://localhost:7860, pick a scenario and place a call.
+
+## Credits
+
+Built together by [Rishi Sangare](https://github.com/rishi-sangare) and [Vedant Lotankar](https://github.com/vedantLotankar), as a roughly 50/50 split of the work.
